@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadoras de riego · Sergio Solano Romero</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{--bg:#0b3a9c;--bg2:#08297a;--panel:#062270;--line:#2a5bd0;--y:#ffd60a;--g:#5aeb78;--ink:#e6efff;--err:#ff9d8a;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#082d84;--bg2:#061f5e;--panel:#051a55;--line:#2450b8}}
+:root[data-theme="dark"]{--bg:#082d84;--bg2:#061f5e;--panel:#051a55;--line:#2450b8}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:Lato,"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg),var(--bg2));line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 48px}
+.perfil{display:flex;gap:18px;align-items:center;background:var(--panel);border:2px solid var(--line);border-left:6px solid var(--y);border-radius:18px;padding:18px 22px;margin-bottom:26px}
+.ini{flex:none;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:1.35rem;letter-spacing:.02em;color:var(--y);border:3px solid var(--g);background:var(--bg2)}
+.perfil .nom{margin:0;font-size:clamp(1.25rem,3.2vw,1.7rem);font-weight:900;color:var(--y);line-height:1.15}
+.perfil .tit{margin:2px 0 0;font-weight:700;color:var(--g);font-size:1.02rem}
+.perfil .svc{margin:8px 0 0;font-size:.95rem;color:var(--ink);opacity:.95}
+.perfil .svc span{white-space:nowrap}
+.perfil .svc i{font-style:normal;color:var(--g);margin:0 6px}
+@media(max-width:560px){.perfil{flex-direction:column;align-items:flex-start;padding:16px}}
+.rv{margin-top:26px}
+.rv h2.t{margin:0 0 4px;font-size:1.5rem;font-weight:900;color:var(--y)}
+.rv .lead{margin:0 0 18px;color:var(--g)}
+.rv .stack{display:grid;gap:16px}
+.rv svg{width:100%;height:auto;display:block;border:2px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#5aa6ee,#cfe6fb)}
+.rv .dims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px}
+@media(max-width:560px){.rv .dims{grid-template-columns:1fr}}
+.rv .dims div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:6px 0}
+.rv .dims span{opacity:.9}.rv .dims b{color:var(--y);text-align:right}
+.rv .hint{font-size:.85rem;opacity:.85;margin:4px 0 0}
+.pie{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:.9rem;color:var(--ink);opacity:.9}
+.pie b{color:var(--y)}
+h1{margin:0;font-size:clamp(1.7rem,4.5vw,2.6rem);font-weight:900;color:var(--y);letter-spacing:-.01em}
+.sub{margin:6px 0 24px;color:var(--g);font-size:1.05rem}
+.grid{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:20px}
+.card h2{margin:0 0 14px;font-size:1.15rem;color:var(--y)}
+label{display:block;font-weight:700;color:var(--g);font-size:.95rem;margin:12px 0 4px}
+label small{font-weight:400;color:var(--ink);opacity:.8}
+input,select{width:100%;padding:11px 12px;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:10px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+input.bad{border-color:var(--err)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;border-radius:10px;padding:11px 16px;cursor:pointer;border:2px solid var(--y)}
+.main{background:var(--y);color:#062270;flex:1}
+.ghost{background:transparent;color:var(--y)}
+.opt{margin-top:18px;padding-top:6px;border-top:1px dashed var(--line)}
+.opt h3{margin:12px 0 0;font-size:1rem;color:var(--y)}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.res{grid-template-columns:1fr}}
+.m{border:2px solid var(--g);border-radius:16px;padding:16px;background:var(--bg2)}
+.m.h{border-color:var(--y)}
+.m h3{margin:0;font-size:1.05rem;color:var(--g)}
+.m.h h3{color:var(--y)}
+.big{font-size:3rem;font-weight:900;color:var(--y);line-height:1.1;margin:8px 0 0}
+.m.h .big{color:var(--g)}
+.big span{font-size:1.05rem;font-weight:700;color:var(--ink);margin-left:6px}
+.mes{color:var(--g);font-weight:700;margin:2px 0 10px}
+.m.h .mes{color:var(--y)}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:.95rem}
+dt{opacity:.85}dd{margin:0;font-weight:700;text-align:right}
+.diff{margin-top:16px;padding:12px 16px;border-radius:12px;border:2px solid var(--y);background:var(--panel);font-weight:700;color:var(--y)}
+.diff b{color:var(--g)}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.95rem}
+th,td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--g)}td{font-weight:700}
+.empty{padding:34px 14px;text-align:center;color:var(--g);font-size:1.05rem}
+.msg{color:var(--err);font-weight:700;margin-top:10px;font-size:.95rem}
+details{margin-top:18px}
+summary{cursor:pointer;color:var(--y);font-weight:700}
+.f{font-family:"Courier New",monospace;background:var(--bg2);padding:10px 12px;border-radius:10px;margin:8px 0;font-size:.92rem;overflow-x:auto;white-space:pre}
+.note{font-size:.88rem;opacity:.85;margin:6px 0 0}
+
+.tel{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-weight:700}
+.tel a{color:var(--y);text-decoration:none;border:2px solid var(--y);border-radius:999px;padding:5px 14px}
+.tel a:hover,.tel a:focus-visible{background:var(--y);color:#062270;outline:none}
+.tel span{color:var(--g);font-weight:400;font-size:.95rem}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;position:sticky;top:0;z-index:5;padding:10px 0;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+.tabs button{flex:1 1 150px;font:inherit;font-weight:900;font-size:1rem;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg2);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--y);color:#062270;border-color:var(--y)}
+.tabs button:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.panel[hidden]{display:none}
+.panel>.sub{margin-top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="perfil" aria-label="Autor de la herramienta">
+<div class="ini" aria-hidden="true">SS</div>
+<div>
+<p class="nom">Sergio Solano Romero</p>
+<p class="tit">Ingeniero Agrícola</p>
+<p class="svc"><span>Diseño e instalación de sistemas de riego</span><i>·</i><span>Fertirriego</span><i>·</i><span>Conservación de suelos</span><i>·</i><span>Diseño y construcción de invernaderos</span></p>
+<p class="tel"><a href="tel:+50683129172" aria-label="Llamar al 8312 9172">📞 8312-9172</a><a href="https://wa.me/50683129172" target="_blank" rel="noopener">WhatsApp</a><span>Contacto: 8312-9172</span></p>
+</div>
+</header>
+<h1>Calculadoras de riego</h1>
+<nav class="tabs" role="tablist" aria-label="Calculadoras"><button role="tab" id="tab_eto" aria-controls="p_eto" aria-selected="true" data-t="eto">ETo y ETc</button><button role="tab" id="tab_reservorio" aria-controls="p_reservorio" aria-selected="false" data-t="reservorio">Reservorio</button><button role="tab" id="tab_laminas" aria-controls="p_laminas" aria-selected="false" data-t="laminas">Lámina de riego</button><button role="tab" id="tab_tiempo" aria-controls="p_tiempo" aria-selected="false" data-t="tiempo">Tiempo de riego</button></nav>
+<div class="panel" id="p_eto" role="tabpanel" aria-labelledby="tab_eto">
+<p class="sub">Evapotranspiración de referencia (Blaney-Criddle y Hargreaves-Samani) y consumo del cultivo ETc</p>
+<div class="grid">
+<section class="card" aria-label="Datos de entrada">
+<h2>Datos de entrada</h2>
+<div class="row">
+<div><label for="lat">Latitud <small>(° , sur negativo)</small></label><input id="lat" inputmode="decimal" placeholder="9,85"></div>
+<div><label for="mes">Mes</label><select id="mes"></select></div>
+</div>
+<div class="row">
+<div><label for="tmax">T máxima <small>(°C)</small></label><input id="tmax" inputmode="decimal" placeholder="26"></div>
+<div><label for="tmin">T mínima <small>(°C)</small></label><input id="tmin" inputmode="decimal" placeholder="15"></div>
+</div>
+<label for="tmed">T media <small>(°C, opcional; si no la ingresa se usa (Tmáx + Tmín) / 2)</small></label>
+<input id="tmed" inputmode="decimal" placeholder="Opcional">
+<div class="opt">
+<h3>Para calcular el consumo del cultivo (opcional)</h3>
+<div class="row">
+<div><label for="kc">Kc</label><input id="kc" inputmode="decimal" placeholder="0,87"></div>
+<div><label for="area">Área <small>(m²)</small></label><input id="area" inputmode="decimal" placeholder="13500"></div>
+</div>
+</div>
+<div class="btns">
+<button class="main" id="calc">Calcular</button>
+<button class="ghost" id="ej">Cargar ejemplo</button>
+<button class="ghost" id="lim">Limpiar</button>
+</div>
+<div class="msg" id="msg" role="alert"></div>
+</section>
+
+<section aria-label="Resultados" aria-live="polite">
+<div class="card" id="out"><div class="empty">Ingrese latitud, mes y temperaturas para ver el cálculo.</div></div>
+<details class="card" style="margin-top:20px">
+<summary>Fórmulas y supuestos</summary>
+<div class="f">Blaney-Criddle:  ETo = p · (0,46 · Tmed + 8,13)   [mm/día]
+Hargreaves-Samani: ETo = 0,0023 · Ra · (Tmed + 17,8) · √(Tmáx − Tmín)
+ETc = ETo · Kc</div>
+<p class="note">p es el porcentaje diario de horas de luz respecto al total anual, calculado con la latitud y el día central del mes. Ra es la radiación extraterrestre en mm/día (FAO-56). Febrero se toma con 28 días. Blaney-Criddle usa solo temperatura media; Hargreaves-Samani agrega el rango térmico diario como indicador de radiación. Son estimaciones: para riego de precisión conviene contrastarlas con una estación meteorológica local.</p>
+</details>
+</section>
+</div>
+</div>
+<div class="panel" id="p_reservorio" role="tabpanel" aria-labelledby="tab_reservorio" hidden>
+<p class="sub">Dimensiones y volumen de un reservorio troncopiramidal según demanda, autonomía y margen de seguridad</p>
+<section class="rv" id="reservorio" aria-label="Cálculo del reservorio">
+<div class="grid">
+<div class="card" aria-label="Datos del reservorio">
+<h2>Datos del reservorio</h2>
+<label for="rv_vd">Demanda máxima diaria <small>(m³/día)</small></label><input id="rv_vd" inputmode="decimal" placeholder="58,73">
+<label for="rv_aut">Autonomía <small>(días)</small></label><input id="rv_aut" inputmode="decimal" placeholder="10">
+<label for="rv_mar">Margen de seguridad <small>(%)</small></label><input id="rv_mar" inputmode="decimal" placeholder="15">
+<label for="rv_prof">Profundidad <small>(m)</small></label><input id="rv_prof" inputmode="decimal" placeholder="2">
+<label for="rv_tal">Talud (V) <small>(m horizontales por cada 1 m de profundidad; 1 = talud 1:1)</small></label><input id="rv_tal" inputmode="decimal" placeholder="1">
+<div class="opt"><h3>Forma de la base (opcional)</h3>
+<label for="rv_rel">Relación largo : ancho <small>(si la deja vacía se usa 1,8)</small></label><input id="rv_rel" inputmode="decimal" placeholder="1,8">
+<p class="hint">Los datos anteriores no definen la forma por sí solos: con el mismo volumen hay infinitas combinaciones de largo y ancho. Esta relación fija una.</p></div>
+<div class="btns"><button class="main" id="rv_calc">Calcular</button><button class="ghost" id="rv_ej">Cargar ejemplo</button><button class="ghost" id="rv_lim">Limpiar</button></div>
+<div class="msg" id="rv_msg" role="alert"></div>
+</div>
+<div id="rv_out" aria-live="polite"><div class="card"><div class="empty">Ingrese los datos del reservorio para ver el cálculo y el esquema 3D.</div></div></div>
+</div>
+<details class="card" style="margin-top:20px"><summary>Fórmulas del reservorio</summary>
+<div class="f">V diseño = demanda diaria · autonomía · (1 + margen / 100)
+V = (h / 3) · (A base + A boca + √(A base · A boca))
+Largo boca = largo base + 2 · talud · h
+Ancho boca = ancho base + 2 · talud · h</div>
+<p class="note">Se resuelve el ancho de la base que entrega exactamente el volumen de diseño, con la profundidad, el talud y la relación largo : ancho indicados. El volumen corresponde al reservorio lleno hasta el borde, sin bordo libre. Es un dimensionamiento preliminar: no incluye impermeabilización, vertedero, bordo libre, pérdidas por infiltración ni evaporación, ni estudios de suelo y estabilidad de taludes.</p></details>
+</section>
+</div>
+<div class="panel" id="p_laminas" role="tabpanel" aria-labelledby="tab_laminas" hidden>
+<p class="sub">Lámina de riego, lámina neta y frecuencia de riego</p>
+<section class="rv" id="lamina" aria-label="Cálculo de láminas de riego">
+<div class="grid">
+<div class="card" aria-label="Datos del suelo y del cultivo">
+<h2>Datos del suelo y del cultivo</h2>
+<label for="lm_tex">Textura</label>
+<select id="lm_tex"><option value="">Seleccione…</option><option>Arenoso</option><option>Franco arenoso</option><option>Franco</option><option>Franco limoso</option><option>Franco arcilloso</option><option>Arcilloso</option></select>
+<label for="lm_cc">Capacidad de campo <small>(%)</small></label><input id="lm_cc" inputmode="decimal" placeholder="31,34">
+<label for="lm_pmp">Punto de marchitez permanente <small>(%)</small></label><input id="lm_pmp" inputmode="decimal" placeholder="15,16">
+<label for="lm_pr">Profundidad de la raíz <small>(cm)</small></label><input id="lm_pr" inputmode="decimal" placeholder="30">
+<label for="lm_da">Densidad aparente <small>(g/cm³)</small></label><input id="lm_da" inputmode="decimal" placeholder="0,97">
+<label for="lm_an">Área neta <small>(m²)</small></label><input id="lm_an" inputmode="decimal" placeholder="13500">
+<label for="lm_p">Coeficiente de agotamiento <small>(%)</small></label><input id="lm_p" inputmode="decimal" placeholder="45">
+<label for="lm_etr">ETr <small>(m³/día)</small></label><input id="lm_etr" inputmode="decimal" placeholder="50,625">
+<p class="hint">Las láminas se calculan sobre el área neta (superficie realmente regada). CC y PMP se ingresan como humedad gravimétrica (%), tal como las reporta el laboratorio.</p>
+<div class="btns"><button class="main" id="lm_calc">Calcular</button><button class="ghost" id="lm_ej">Cargar ejemplo</button><button class="ghost" id="lm_lim">Limpiar</button></div>
+<div class="msg" id="lm_msg" role="alert"></div>
+</div>
+<div id="lm_out" aria-live="polite"><div class="card"><div class="empty">Ingrese los datos para calcular las láminas y la frecuencia de riego.</div></div></div>
+</div>
+<details class="card" style="margin-top:20px"><summary>Fórmulas utilizadas</summary>
+<div class="f">Lr (L/m²) = (CC − PMP) / 100 · Profundidad de raíz (mm) · Da
+Lr (m³) = Lr (L/m²) · Área neta / 1000
+Ln (L/m²) = Lr (L/m²) · Agotamiento / 100
+Ln (m³) = Ln (L/m²) · Área neta / 1000
+Frecuencia (días) = Ln (m³) / ETr (m³/día)</div>
+<p class="note">La frecuencia siempre se redondea hacia el número entero mayor (4,22 → 5; 4,82 → 5). Es un cálculo preliminar: no incluye eficiencia de aplicación, lluvia, aporte capilar ni variación del Kc durante el ciclo.</p></details>
+</section>
+</div>
+<div class="panel" id="p_tiempo" role="tabpanel" aria-labelledby="tab_tiempo" hidden>
+<p class="sub">Caudales por sector y horas de riego en sistemas por goteo</p>
+<section class="rv" id="tiempo" aria-label="Cálculo del tiempo de riego">
+<div class="grid">
+<div class="card" aria-label="Datos del sistema de riego">
+<h2>Datos del sistema de riego</h2>
+<label for="tr_np">Número de plantas</label><input id="tr_np" inputmode="decimal" placeholder="12500">
+<label for="tr_ng">Número de goteros por planta</label><input id="tr_ng" inputmode="decimal" placeholder="2">
+<label for="tr_qg">Caudal por gotero <small>(L/hora)</small></label><input id="tr_qg" inputmode="decimal" placeholder="1,6">
+<label for="tr_ns">Número de sectores de riego</label><input id="tr_ns" inputmode="decimal" placeholder="4">
+<label for="tr_ln">Lámina neta <small>(m³)</small></label><input id="tr_ln" inputmode="decimal" placeholder="286">
+<div class="opt"><h3>Datos de referencia (opcionales)</h3>
+<label for="tr_p">Coeficiente de agotamiento <small>(%)</small></label><input id="tr_p" inputmode="decimal" placeholder="45">
+<label for="tr_etr">ETr <small>(m³/día)</small></label><input id="tr_etr" inputmode="decimal" placeholder="50,625">
+<p class="hint">Estos dos datos no entran en el cálculo del tiempo de riego. Si ingresa la ETr, la página también muestra la frecuencia de riego (Ln / ETr, redondeada hacia arriba).</p></div>
+<div class="btns"><button class="main" id="tr_calc">Calcular</button><button class="ghost" id="tr_ej">Cargar ejemplo</button><button class="ghost" id="tr_lim">Limpiar</button></div>
+<div class="msg" id="tr_msg" role="alert"></div>
+</div>
+<div id="tr_out" aria-live="polite"><div class="card"><div class="empty">Ingrese los datos del sistema para calcular el tiempo de riego.</div></div></div>
+</div>
+<details class="card" style="margin-top:20px"><summary>Fórmulas utilizadas</summary>
+<div class="f">Plantas por sector = Número de plantas / Sectores
+Total de goteros = Número de plantas · Goteros por planta
+Caudal total (m³/h) = Caudal del gotero (L/h) · Total de goteros / 1000
+Caudal por sector (m³/h) = Caudal total / Sectores
+Ln por sector (m³) = Ln / Sectores
+Tiempo de riego (h) = Ln por sector / Caudal por sector</div>
+<p class="note">Se asume que los sectores tienen igual número de plantas y que se riegan uno a la vez, con el caudal total dividido entre ellos. El tiempo es el de cada sector; el tiempo total del evento es ese valor por el número de sectores. Es un cálculo preliminar: no incluye eficiencia de aplicación, pérdidas de presión ni variación de caudal de los goteros.</p></details>
+</section>
+</div>
+<footer class="pie">Herramientas elaboradas por <b>Sergio Solano Romero</b>, Ingeniero Agrícola · Contacto: <a href="tel:+50683129172" style="color:var(--y)">8312-9172</a>. Los resultados son estimaciones de referencia y no sustituyen el criterio técnico, el diseño de un profesional ni los datos de una estación meteorológica local.</footer>
+</div>
+<script>
+(function(){
+const $ = id => document.getElementById(id);
+const MES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const DIAS = [31,28,31,30,31,30,31,31,30,31,30,31];
+MES.forEach((m,i)=>{const o=document.createElement("option");o.value=i+1;o.textContent=m;$("mes").appendChild(o)});
+const num = s => { s=String(s).trim(); if(!s) return NaN; const v=parseFloat(s.replace(",",".")); return isFinite(v)?v:NaN };
+const fm = (v,d=2) => v.toFixed(d).replace(".",",");
+const rad = Math.PI/180;
+const decl = J => 0.409*Math.sin(2*Math.PI*J/365-1.39);
+function sun(lat,J){ const x=-Math.tan(lat*rad)*Math.tan(decl(J)); const ws=Math.acos(Math.max(-1,Math.min(1,x))); return {ws, N:24/Math.PI*ws} }
+function Ra(lat,J){
+  const phi=lat*rad, d=decl(J), dr=1+0.033*Math.cos(2*Math.PI*J/365), {ws}=sun(lat,J);
+  return 0.408*(24*60/Math.PI)*0.0820*dr*(ws*Math.sin(phi)*Math.sin(d)+Math.cos(phi)*Math.cos(d)*Math.sin(ws));
+}
+function pFactor(lat,J){ let s=0; for(let j=1;j<=365;j++) s+=sun(lat,j).N; return sun(lat,J).N/s*100 }
+
+function calcular(show){
+  const ids=["lat","tmax","tmin","tmed","kc","area"];
+  ids.forEach(i=>$(i).classList.remove("bad"));
+  $("msg").textContent="";
+  const lat=num($("lat").value), tmax=num($("tmax").value), tmin=num($("tmin").value), tmedIn=num($("tmed").value);
+  const kc=num($("kc").value), area=num($("area").value), m=+$("mes").value;
+  const err=[];
+  if(isNaN(lat)||Math.abs(lat)>66){ if(show||$("lat").value) {$("lat").classList.add("bad");err.push("La latitud debe estar entre −66 y 66 °.")} }
+  const tieneRango=!isNaN(tmax)&&!isNaN(tmin);
+  if(tieneRango&&tmax<=tmin){ $("tmax").classList.add("bad");$("tmin").classList.add("bad"); err.push("La temperatura máxima debe ser mayor que la mínima.") }
+  const tmed=!isNaN(tmedIn)?tmedIn:(tieneRango?(tmax+tmin)/2:NaN);
+  if(isNaN(lat)||Math.abs(lat)>66||isNaN(tmed)||(tieneRango&&tmax<=tmin)){
+    if(show){ if(isNaN(tmed)&&!err.length) err.push("Ingrese Tmáx y Tmín (o al menos la T media)."); if(isNaN(lat)&&!err.length) err.push("Ingrese la latitud.") }
+    $("msg").textContent=err.join(" ");
+    $("out").innerHTML='<div class="empty">Ingrese latitud, mes y temperaturas para ver el cálculo.</div>';
+    return;
+  }
+  const J=Math.round(30.4*m-15), dias=DIAS[m-1];
+  const p=pFactor(lat,J), N=sun(lat,J).N;
+  const bc=p*(0.46*tmed+8.13);
+  const ra=Ra(lat,J);
+  const hs=tieneRango?0.0023*ra*(tmed+17.8)*Math.sqrt(tmax-tmin):NaN;
+  const hasKc=!isNaN(kc)&&kc>0, hasArea=!isNaN(area)&&area>0;
+  let html='<div class="res">';
+  html+=`<div class="m"><h3>Blaney-Criddle</h3><div class="big">${fm(bc)}<span>mm/día</span></div><div class="mes">${fm(bc*dias,1)} mm en ${MES[m-1].toLowerCase()}</div>
+  <dl><dt>T media</dt><dd>${fm(tmed,1)} °C</dd><dt>Horas de luz (N)</dt><dd>${fm(N,2)} h</dd><dt>Factor p</dt><dd>${fm(p,3)} %</dd></dl></div>`;
+  if(isNaN(hs)) html+=`<div class="m h"><h3>Hargreaves-Samani</h3><p class="note">Requiere T máxima y T mínima para calcular el rango térmico.</p></div>`;
+  else html+=`<div class="m h"><h3>Hargreaves-Samani</h3><div class="big">${fm(hs)}<span>mm/día</span></div><div class="mes">${fm(hs*dias,1)} mm en ${MES[m-1].toLowerCase()}</div>
+  <dl><dt>T media</dt><dd>${fm(tmed,1)} °C</dd><dt>Rango Tmáx − Tmín</dt><dd>${fm(tmax-tmin,1)} °C</dd><dt>Ra</dt><dd>${fm(ra,2)} mm/día</dd></dl></div>`;
+  html+='</div>';
+  if(!isNaN(hs)){
+    const dif=bc-hs, pct=dif/hs*100;
+    html+=`<div class="diff">Diferencia entre métodos: <b>${fm(Math.abs(dif))} mm/día</b> (${fm(Math.abs(pct),1)} %), ${dif>=0?"Blaney-Criddle da un valor mayor":"Hargreaves-Samani da un valor mayor"}.</div>`;
+  }
+  if(hasKc){
+    html+=`<h2 style="margin:20px 0 0;font-size:1.05rem;color:var(--y)">Consumo del cultivo (ETc = ETo × Kc = ${fm(kc)})</h2><table><tr><th>Método</th><th>L/m²/día</th>${hasArea?"<th>m³/día</th><th>m³ en el mes</th>":""}</tr>`;
+    const fila=(n,e)=>{const c=e*kc;return `<tr><td>${n}</td><td>${fm(c)}</td>${hasArea?`<td>${fm(c*area/1000,1)}</td><td>${fm(c*area/1000*dias,0)}</td>`:""}</tr>`};
+    html+=fila("Blaney-Criddle",bc); if(!isNaN(hs)) html+=fila("Hargreaves-Samani",hs);
+    html+='</table>';
+  }
+  $("out").innerHTML=html;
+}
+$("calc").onclick=()=>calcular(true);
+["lat","mes","tmax","tmin","tmed","kc","area"].forEach(i=>$(i).addEventListener("input",()=>calcular(false)));
+$("ej").onclick=()=>{ $("lat").value="9,85"; $("mes").value=4; $("tmax").value="26"; $("tmin").value="15"; $("tmed").value=""; $("kc").value="0,87"; $("area").value="13500"; calcular(true) };
+$("lim").onclick=()=>{ ["lat","tmax","tmin","tmed","kc","area"].forEach(i=>$(i).value=""); $("mes").value=1; calcular(false) };
+
+/* ---------- Reservorio ---------- */
+function volTr(W,r,d,z){const L=r*W,A1=L*W,A2=(W+2*z*d)*(L+2*z*d);return d/3*(A1+A2+Math.sqrt(A1*A2))}
+function pill(txt,x,y,col){const w=txt.length*7.4+20;return `<rect x="${(x-w/2).toFixed(1)}" y="${(y-12).toFixed(1)}" width="${w.toFixed(1)}" height="24" rx="12" fill="#062270" stroke="${col}" stroke-width="1.6"/><text x="${x.toFixed(1)}" y="${(y+4.5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="${col}" font-family="Lato,Arial,sans-serif">${txt}</text>`}
+function svg3d(R){
+  const {Lt,Wt,Lb,Wb,d,z}=R, VW=760, VH=440, c=0.866, s=0.5, e=0.3*Math.min(Lt,Wt), t=0.4*d, zd=z*d;
+  const ve=Math.min(3,Math.max(1,0.25*Lt/d)), P=(x,y,zz)=>[(x-y)*c,(x+y)*s-zz*ve];
+  const cs=[[-e,-e,0],[Lt+e,-e,0],[Lt+e,Wt+e,0],[-e,Wt+e,0],[-e,Wt+e,-t],[Lt+e,Wt+e,-t],[Lt+e,-e,-t]].map(p=>P(...p));
+  const xs=cs.map(p=>p[0]), ys=cs.map(p=>p[1]);
+  const minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
+  const k=Math.min((VW-220)/(maxx-minx),(VH-90)/(maxy-miny));
+  const ox=VW/2-(minx+maxx)/2*k, oy=28-miny*k+((VH-90)-(maxy-miny)*k)/2;
+  const T=(x,y,zz)=>{const q=P(x,y,zz);return [ox+q[0]*k,oy+q[1]*k]};
+  const pts=a=>a.map(p=>T(...p).map(v=>v.toFixed(1)).join(",")).join(" ");
+  const rim=[[0,0,0],[Lt,0,0],[Lt,Wt,0],[0,Wt,0]];
+  const floor=[[zd,zd,-d],[zd+Lb,zd,-d],[zd+Lb,zd+Wb,-d],[zd,zd+Wb,-d]];
+  const wallX=[[0,0,0],[0,Wt,0],[zd,zd+Wb,-d],[zd,zd,-d]];
+  const wallY=[[0,0,0],[Lt,0,0],[zd+Lb,zd,-d],[zd,zd,-d]];
+  const h=0.3*d, w=z*h;
+  const water=[[w,w,-h],[Lt-w,w,-h],[Lt-w,Wt-w,-h],[w,Wt-w,-h]];
+  let o=`<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Esquema 3D del reservorio con sus medidas"><defs><clipPath id="rvclip"><polygon points="${pts(rim)}"/></clipPath></defs>`;
+  o+=`<polygon points="${pts([[Lt+e,-e,0],[Lt+e,Wt+e,0],[Lt+e,Wt+e,-t],[Lt+e,-e,-t]])}" fill="#8a5a34"/>`;
+  o+=`<polygon points="${pts([[-e,Wt+e,0],[Lt+e,Wt+e,0],[Lt+e,Wt+e,-t],[-e,Wt+e,-t]])}" fill="#6e4528"/>`;
+  o+=`<polygon points="${pts([[-e,-e,0],[Lt+e,-e,0],[Lt+e,Wt+e,0],[-e,Wt+e,0]])}" fill="#5b9a3f" stroke="#3f7a2b" stroke-width="1.5"/>`;
+  o+=`<g clip-path="url(#rvclip)"><polygon points="${pts(rim)}" fill="#3b2916"/>`;
+  o+=`<polygon points="${pts(floor)}" fill="#5a3d22"/>`;
+  o+=`<polygon points="${pts(wallX)}" fill="#a77544"/><polygon points="${pts(wallY)}" fill="#8a5c32"/>`;
+  o+=`<polygon points="${pts(water)}" fill="#2f8de0" fill-opacity=".66" stroke="#bfe3ff" stroke-width="1.5"/>`;
+  o+=`<polygon points="${pts(floor)}" fill="none" stroke="#ffd60a" stroke-width="2" stroke-dasharray="6 4"/></g>`;
+  o+=`<polygon points="${pts(rim)}" fill="none" stroke="#ffd60a" stroke-width="2.6" stroke-linejoin="round"/>`;
+  const a=T(Lt,0,0), b=T(Lt,0,-d);
+  o+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#fff" stroke-width="2.4"/>`;
+  [a,b].forEach(q=>{o+=`<line x1="${(q[0]-7).toFixed(1)}" y1="${q[1].toFixed(1)}" x2="${(q[0]+7).toFixed(1)}" y2="${q[1].toFixed(1)}" stroke="#fff" stroke-width="2.4"/>`});
+  const tp="Prof. "+fm(d,2)+" m"; o+=pill(tp,a[0]+(tp.length*7.4+20)/2+10,(a[1]+b[1])/2,"#ffd60a");
+  let q=T(Lt/2,Wt+e*0.55,0); o+=pill("Largo boca "+fm(Lt,2)+" m",q[0],q[1],"#5aeb78");
+  q=T(Lt+e*0.55,Wt/2,0); o+=pill("Ancho boca "+fm(Wt,2)+" m",q[0],q[1],"#5aeb78");
+  q=T(zd+Lb/2,zd,-d); o+=pill("Largo base "+fm(Lb,2)+" m",q[0],q[1],"#ffd60a");
+  q=T(zd,zd+Wb/2,-d); o+=pill("Ancho base "+fm(Wb,2)+" m",q[0],q[1],"#ffd60a");
+  q=T(Lt*0.3,zd/2,-d/2); o+=pill("Talud "+fm(z,2)+" H : 1 V",q[0],q[1],"#5aeb78");
+  o+=`<text x="${VW-12}" y="${VH-10}" text-anchor="end" font-size="11" fill="#0a2a6b" font-family="Lato,Arial,sans-serif">Esquema ilustrativo, profundidad exagerada</text>`;
+  return o+"</svg>";
+}
+function reservorio(show){
+  const ids=["rv_vd","rv_aut","rv_mar","rv_prof","rv_tal","rv_rel"];
+  ids.forEach(i=>$(i).classList.remove("bad"));
+  $("rv_msg").textContent="";
+  const vd=num($("rv_vd").value), aut=num($("rv_aut").value), mar=num($("rv_mar").value), d=num($("rv_prof").value), z=num($("rv_tal").value);
+  let r=num($("rv_rel").value); if(isNaN(r)) r=1.8;
+  const vacio='<div class="card"><div class="empty">Ingrese los datos del reservorio para ver el cálculo y el esquema 3D.</div></div>';
+  const campos=[["rv_vd",vd>0],["rv_aut",aut>0],["rv_mar",mar>=0],["rv_prof",d>0],["rv_tal",z>0],["rv_rel",r>=1]];
+  const malos=campos.filter(c=>!c[1]);
+  if(malos.length){
+    if(show){malos.forEach(c=>$(c[0]).classList.add("bad")); $("rv_msg").textContent=(isNaN(r)||r<1)&&!isNaN(num($("rv_rel").value))?"La relación largo : ancho debe ser 1 o mayor.":"Complete todos los datos con valores válidos (mayores que 0; el margen puede ser 0)."}
+    $("rv_out").innerHTML=vacio; return;
+  }
+  const V0=vd*aut, V=V0*(1+mar/100);
+  if(V<=4/3*z*z*d*d*d){
+    $("rv_prof").classList.add("bad"); $("rv_tal").classList.add("bad");
+    $("rv_msg").textContent="Con esa profundidad y ese talud el reservorio sería más grande que el volumen requerido. Reduzca la profundidad o el talud.";
+    $("rv_out").innerHTML=vacio; return;
+  }
+  let lo=0, hi=1; while(volTr(hi,r,d,z)<V && hi<1e6) hi*=2;
+  for(let i=0;i<80;i++){const mid=(lo+hi)/2; if(volTr(mid,r,d,z)<V) lo=mid; else hi=mid;}
+  const Wb=(lo+hi)/2, Lb=r*Wb, Lt=Lb+2*z*d, Wt=Wb+2*z*d;
+  const R={Lt,Wt,Lb,Wb,d,z};
+  $("rv_out").innerHTML=`<div class="stack">
+  <div class="m h"><h3>Volumen total de almacenamiento</h3><div class="big">${fm(V,1)}<span>m³</span></div><div class="mes">${fm(V*1000,0)} litros · ${fm(vd,2)} m³/día × ${fm(aut,0)} días + ${fm(mar,0)} % de margen</div></div>
+  ${svg3d(R)}
+  <div class="m"><h3>Medidas del reservorio</h3><div class="dims">
+  <div><span>Largo de la boca</span><b>${fm(Lt,2)} m</b></div><div><span>Ancho de la boca</span><b>${fm(Wt,2)} m</b></div>
+  <div><span>Largo de la base</span><b>${fm(Lb,2)} m</b></div><div><span>Ancho de la base</span><b>${fm(Wb,2)} m</b></div>
+  <div><span>Profundidad</span><b>${fm(d,2)} m</b></div><div><span>Talud (H : V)</span><b>${fm(z,2)} : 1</b></div>
+  <div><span>Volumen sin margen</span><b>${fm(V0,1)} m³</b></div><div><span>Volumen total</span><b>${fm(V,1)} m³</b></div>
+  </div></div></div>`;
+}
+$("rv_calc").onclick=()=>reservorio(true);
+["rv_vd","rv_aut","rv_mar","rv_prof","rv_tal","rv_rel"].forEach(i=>$(i).addEventListener("input",()=>reservorio(false)));
+$("rv_ej").onclick=()=>{ $("rv_vd").value="58,73"; $("rv_aut").value="10"; $("rv_mar").value="15"; $("rv_prof").value="2"; $("rv_tal").value="1"; $("rv_rel").value="1,83"; reservorio(true) };
+$("rv_lim").onclick=()=>{ ["rv_vd","rv_aut","rv_mar","rv_prof","rv_tal","rv_rel"].forEach(i=>$(i).value=""); reservorio(false) };
+})();
+(function(){
+const $ = id => document.getElementById(id);
+const num = s => { s=String(s).trim(); if(!s) return NaN; const v=parseFloat(s.replace(",",".")); return isFinite(v)?v:NaN };
+const fm = (v,d=2) => { const [i,dec]=v.toFixed(d).split("."); const ent=i.replace(/\B(?=(\d{3})+$)/g,"\u00a0"); return dec?ent+","+dec:ent };
+const IDS=["lm_cc","lm_pmp","lm_pr","lm_da","lm_an","lm_p","lm_etr"];
+const VACIO='<div class="card"><div class="empty">Ingrese los datos para calcular las láminas y la frecuencia de riego.</div></div>';
+function lamina(show){
+  IDS.forEach(i=>$(i).classList.remove("bad")); $("lm_msg").textContent="";
+  const cc=num($("lm_cc").value), pmp=num($("lm_pmp").value), pr=num($("lm_pr").value), da=num($("lm_da").value), an=num($("lm_an").value), p=num($("lm_p").value), etr=num($("lm_etr").value), A=an;
+  const ok={lm_cc:cc>0&&cc<=100,lm_pmp:pmp>=0&&pmp<100,lm_pr:pr>0,lm_da:da>0,lm_an:an>0,lm_p:p>0&&p<=100,lm_etr:etr>0};
+  const malos=IDS.filter(i=>!ok[i]);
+  if(malos.length){ if(show){malos.forEach(i=>$(i).classList.add("bad")); $("lm_msg").textContent="Complete todos los datos con valores válidos (los porcentajes entre 0 y 100 y el área mayor que 0)."} $("lm_out").innerHTML=VACIO; return }
+  if(cc<=pmp){ $("lm_cc").classList.add("bad"); $("lm_pmp").classList.add("bad"); $("lm_msg").textContent="La capacidad de campo debe ser mayor que el punto de marchitez permanente."; $("lm_out").innerHTML=VACIO; return }
+  const lrLm=(cc-pmp)/100*(pr*10)*da, lrM=lrLm*A/1000;
+  const lnLm=lrLm*p/100, lnM=lnLm*A/1000;
+  const fe=lnM/etr, f=Math.max(1,Math.ceil(fe-1e-9));
+  const tex=$("lm_tex").value;
+  let frec, nota="";
+  if(f<1){ frec="< 1"; nota="La lámina neta no alcanza para un día de consumo: se requiere riego más de una vez al día (riegos pulsados) o un suelo con más reserva."; }
+  else { frec=String(f); }
+  $("lm_out").innerHTML=`<div class="stack">
+  <div class="m h"><h3>Frecuencia de riego</h3><div class="big">${frec}<span>${f===1?"día":"días"}</span></div><div class="mes">Exacto: ${fm(fe,2)} días${tex?" · textura "+tex.toLowerCase():""}</div>${nota?`<p class="hint">${nota}</p>`:""}</div>
+  <div class="m"><h3>Láminas calculadas</h3><div class="dims">
+  <div><span>Lr (L/m²)</span><b>${fm(lrLm,2)} L/m²</b></div><div><span>Lr (m³)</span><b>${fm(lrM,1)} m³</b></div>
+  <div><span>Ln (L/m²)</span><b>${fm(lnLm,2)} L/m²</b></div><div><span>Ln (m³)</span><b>${fm(lnM,1)} m³</b></div>
+  </div></div></div>`;
+}
+$("lm_calc").onclick=()=>lamina(true);
+IDS.concat(["lm_tex"]).forEach(i=>$(i).addEventListener("input",()=>lamina(false)));
+$("lm_ej").onclick=()=>{ $("lm_tex").value="Franco"; $("lm_cc").value="31,34"; $("lm_pmp").value="15,16"; $("lm_pr").value="30"; $("lm_da").value="0,97"; $("lm_an").value="13500"; $("lm_p").value="45"; $("lm_etr").value="50,625"; lamina(true) };
+$("lm_lim").onclick=()=>{ IDS.forEach(i=>$(i).value=""); $("lm_tex").value=""; lamina(false) };
+})();
+(function(){
+const $ = id => document.getElementById(id);
+const num = s => { s=String(s).trim(); if(!s) return NaN; const v=parseFloat(s.replace(",",".")); return isFinite(v)?v:NaN };
+const fm = (v,d=2) => { const [i,dec]=v.toFixed(d).split("."); const ent=i.replace(/\B(?=(\d{3})+$)/g,"\u00a0"); return dec?ent+","+dec:ent };
+const REQ=["tr_np","tr_ng","tr_qg","tr_ns","tr_ln"], ALL=REQ.concat(["tr_p","tr_etr"]);
+const VACIO='<div class="card"><div class="empty">Ingrese los datos del sistema para calcular el tiempo de riego.</div></div>';
+function hm(h){ let m=Math.round(h*60); return Math.floor(m/60)+" h "+String(m%60).padStart(2,"0")+" min" }
+function tiempo(show){
+  ALL.forEach(i=>$(i).classList.remove("bad")); $("tr_msg").textContent="";
+  const v={}; ALL.forEach(i=>v[i]=num($(i).value));
+  const malos=REQ.filter(i=>!(v[i]>0));
+  const opt=[["tr_p",!isNaN(v.tr_p)&&!(v.tr_p>0&&v.tr_p<=100)],["tr_etr",!isNaN(v.tr_etr)&&!(v.tr_etr>0)]].filter(c=>c[1]).map(c=>c[0]);
+  if(malos.length||opt.length){ if(show){malos.concat(opt).forEach(i=>$(i).classList.add("bad")); $("tr_msg").textContent="Complete los datos obligatorios con valores mayores que 0 (el agotamiento entre 0 y 100)."} $("tr_out").innerHTML=VACIO; return }
+  const np=v.tr_np, ng=v.tr_ng, qg=v.tr_qg, ns=v.tr_ns, ln=v.tr_ln;
+  const pps=np/ns, tg=np*ng, qt=qg*tg/1000, qs=qt/ns, lns=ln/ns, t=lns/qs;
+  const dec=Number.isInteger(pps)?0:1;
+  let extra="";
+  if(v.tr_etr>0){ const fe=ln/v.tr_etr, f=Math.max(1,Math.ceil(fe-1e-9)); extra=`<div><span>Frecuencia de riego (Ln / ETr)</span><b>${f} ${f===1?"día":"días"}</b></div>`; }
+  $("tr_out").innerHTML=`<div class="stack">
+  <div class="m h"><h3>Tiempo de riego por sector</h3><div class="big">${fm(t,2)}<span>horas</span></div><div class="mes">${hm(t)} por sector · ${fm(t*ns,2)} h en total para los ${fm(ns,0)} sectores</div></div>
+  <div class="m"><h3>Resultados del cálculo</h3><div class="dims">
+  <div><span>Plantas por sector</span><b>${fm(pps,dec)}</b></div><div><span>Total de goteros</span><b>${fm(tg,0)}</b></div>
+  <div><span>Caudal total de riego</span><b>${fm(qt,2)} m³/h</b></div><div><span>Caudal por sector</span><b>${fm(qs,2)} m³/h</b></div>
+  <div><span>Ln por sector</span><b>${fm(lns,2)} m³</b></div><div><span>Tiempo de riego</span><b>${fm(t,2)} h</b></div>
+  ${extra}
+  </div></div></div>`;
+}
+$("tr_calc").onclick=()=>tiempo(true);
+ALL.forEach(i=>$(i).addEventListener("input",()=>tiempo(false)));
+$("tr_ej").onclick=()=>{ const e={tr_np:"12500",tr_ng:"2",tr_qg:"1,6",tr_ns:"4",tr_ln:"286",tr_p:"45",tr_etr:"50,625"}; for(const k in e)$(k).value=e[k]; tiempo(true) };
+$("tr_lim").onclick=()=>{ ALL.forEach(i=>$(i).value=""); tiempo(false) };
+})();
+(function(){
+  const tabs=[...document.querySelectorAll(".tabs button")];
+  function show(k,push){
+    tabs.forEach(b=>{const on=b.dataset.t===k; b.setAttribute("aria-selected",on); document.getElementById("p_"+b.dataset.t).hidden=!on});
+    if(push){try{history.replaceState(null,"","#"+k)}catch(e){}}
+  }
+  tabs.forEach((b,i)=>{b.addEventListener("click",()=>show(b.dataset.t,true));
+    b.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];n.focus();show(n.dataset.t,true)}})});
+  const h=(location.hash||"").slice(1); if(tabs.some(b=>b.dataset.t===h)) show(h,false);
+})();
+</script>
+</body>
+</html>
